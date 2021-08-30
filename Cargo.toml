@@ -8,4 +8,8 @@ repository = "https://github.com/flying7eleven/biograf-rs"
 readme = "README.md"
 license-file = "LICENSE.md"
 
-[dependencies]
+[dependencies.clap]
+version = "3.0.0-beta.4"
+default-features = false
+features = ["std", "cargo", "derive", "color", "suggestions", "wrap_help"]
+
