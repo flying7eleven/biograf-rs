@@ -16,3 +16,7 @@ features = ["std", "cargo", "derive", "color", "suggestions", "wrap_help"]
 [dependencies.chrono]
 version = "0.4.19"
 default-features = true
+
+[dependencies.log]
+version = "0.4.14"
+default-features = true
