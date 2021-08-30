@@ -1,8 +1,11 @@
 [package]
 name = "biograf-rs"
-version = "0.1.0"
+version = "0.0.0"
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = ["Tim Janke <tim+github@janke.biz>"]
+description = "A simple helper tool to quickly optimize your YouTube playlists"
+repository = "https://github.com/flying7eleven/biograf-rs"
+readme = "README.md"
+license-file = "LICENSE.md"
 
 [dependencies]
