@@ -22,3 +22,7 @@ version = "0.4.14"
 [dependencies.fern]
 version = "0.6.0"
 default-features = false
+
+[dependencies.indicatif]
+version = "0.16.2"
+default-features = false
