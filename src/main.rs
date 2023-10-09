@@ -1,16 +1,3 @@
-use clap::{crate_authors, crate_description, crate_name, crate_version, Parser};
-
-#[derive(Parser)]
-#[clap(name = crate_name!(), version = crate_version!(), author = crate_authors!(), about = crate_description!())]
-struct Biograf {
-    /// Do not really modify the data, just simulate based on the input data
-    #[clap(short, long)]
-    dry_run: bool,
-    /// A level of verbosity, and can be used multiple times
-    #[arg(short, long, action = clap::ArgAction::Count)]
-    verbose: u8,
-}
-
 fn setup_logging(verbosity_level: u8) {
     use chrono::Utc;
 
@@ -60,17 +47,5 @@ fn setup_logging(verbosity_level: u8) {
 }
 
 fn main() {
-    use log::{debug, error, info, trace, warn};
-
-    // get the command line parameters from the user
-    let cmd_parameters: Biograf = Biograf::parse();
-
-    // determine the verbosity level based on the occurrences of the flag
-    setup_logging(cmd_parameters.verbose);
-
-    trace!("Trace");
-    debug!("Debug");
-    info!("Info");
-    warn!("Warning");
-    error!("Error");
+    setup_logging(3);
 }
