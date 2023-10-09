@@ -1,7 +1,7 @@
 [package]
 name = "biograf-rs"
-version = "0.0.0"
-edition = "2018"
+version = "2023.10.6"
+edition = "2021"
 authors = ["Tim Janke <tim+github@janke.biz>"]
 description = "A simple helper tool to quickly optimize your YouTube playlists"
 repository = "https://github.com/flying7eleven/biograf-rs"
@@ -9,20 +9,24 @@ readme = "README.md"
 license-file = "LICENSE.md"
 
 [dependencies.clap]
-version = "3.0.0-beta.4"
+version = "4.3.1"
 default-features = false
 features = ["std", "cargo", "derive", "color", "suggestions", "wrap_help"]
 
 [dependencies.chrono]
-version = "0.4.19"
+version = "0.4.26"
 
 [dependencies.log]
-version = "0.4.14"
+version = "0.4.18"
 
 [dependencies.fern]
-version = "0.6.0"
+version = "0.6.2"
 default-features = false
 
 [dependencies.indicatif]
-version = "0.16.2"
+version = "0.17.5"
+default-features = false
+
+[dependencies.google-youtube3]
+version = "5.0.2"
 default-features = false

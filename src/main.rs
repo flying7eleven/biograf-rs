@@ -1,18 +1,17 @@
-use clap::{crate_authors, crate_description, crate_name, crate_version, AppSettings, Clap};
+use clap::{crate_authors, crate_description, crate_name, crate_version, Parser};
 
-#[derive(Clap)]
-#[clap(setting = AppSettings::ColoredHelp)]
+#[derive(Parser)]
 #[clap(name = crate_name!(), version = crate_version!(), author = crate_authors!(), about = crate_description!())]
 struct Biograf {
     /// Do not really modify the data, just simulate based on the input data
     #[clap(short, long)]
     dry_run: bool,
     /// A level of verbosity, and can be used multiple times
-    #[clap(short, long, parse(from_occurrences))]
-    verbose: i32,
+    #[arg(short, long, action = clap::ArgAction::Count)]
+    verbose: u8,
 }
 
-fn setup_logging(verbosity_level: i32) {
+fn setup_logging(verbosity_level: u8) {
     use chrono::Utc;
 
     // create an instance for the Dispatcher to create a new logging configuration
