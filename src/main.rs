@@ -1,3 +1,28 @@
+use lazy_static::lazy_static;
+use serde_derive::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
+struct GoogleClientSecretData {
+    pub client_id: String,
+    pub project_id: String,
+    pub auth_uri: String,
+    pub token_uri: String,
+    pub auth_provider_x509_cert_url: String,
+    pub client_secret: String,
+    pub redirect_uris: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+struct GoogleClientSecretsRoot {
+    pub installed: GoogleClientSecretData,
+}
+
+const GOOGLE_CLIENT_INFORMATION_STR: &str = include_str!("../client_secret.json");
+lazy_static! {
+    static ref GOOGLE_CLIENT_INFORMATION_JSON: GoogleClientSecretsRoot =
+        serde_json::from_str(&GOOGLE_CLIENT_INFORMATION_STR).unwrap();
+}
+
 fn setup_logging(verbosity_level: u8) {
     use chrono::Utc;
 

@@ -9,21 +9,37 @@ readme = "README.md"
 license-file = "LICENSE.md"
 
 [dependencies.chrono]
-version = "0.4.26"
-default-features = false
-
-[dependencies.log]
-version = "0.4.18"
+version = "0.4.31"
 default-features = false
 
 [dependencies.fern]
 version = "0.6.2"
 default-features = false
 
-[dependencies.indicatif]
-version = "0.17.5"
+[dependencies.google-youtube3]
+version = "5.0.3"
 default-features = false
 
-[dependencies.google-youtube3]
-version = "5.0.2"
+[dependencies.indicatif]
+version = "0.17.7"
+default-features = false
+
+[dependencies.lazy_static]
+version = "1.4.0"
+default-features = false
+
+[dependencies.log]
+version = "0.4.20"
+default-features = false
+
+[dependencies.serde]
+version = "1.0.188"
+default-features = false
+
+[dependencies.serde_derive]
+version = "1.0.188"
+default-features = false
+
+[dependencies.serde_json]
+version = "1.0.107"
 default-features = false
