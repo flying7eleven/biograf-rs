@@ -18,7 +18,7 @@ default-features = false
 
 [dependencies.google-youtube3]
 version = "5.0.3"
-default-features = false
+default-features = true
 
 [dependencies.indicatif]
 version = "0.17.7"
@@ -43,3 +43,8 @@ default-features = false
 [dependencies.serde_json]
 version = "1.0.107"
 default-features = false
+
+[dependencies.tokio]
+version = "1.33.0"
+default-features = false
+features = ["rt-multi-thread"]
