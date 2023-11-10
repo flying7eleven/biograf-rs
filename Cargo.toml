@@ -12,6 +12,10 @@ license-file = "LICENSE.md"
 version = "0.4.31"
 default-features = false
 
+[dependencies.dialoguer]
+version = "0.11.0"
+default-features = false
+
 [dependencies.fern]
 version = "0.6.2"
 default-features = false
