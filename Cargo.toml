@@ -12,11 +12,6 @@ license-file = "LICENSE.md"
 version = "0.4.31"
 default-features = false
 
-[dependencies.crossterm]
-version = "0.27.0"
-default-features = false
-features = ["events"]
-
 [dependencies.fern]
 version = "0.6.2"
 default-features = false
@@ -25,10 +20,6 @@ default-features = false
 version = "5.0.3"
 default-features = true
 
-[dependencies.indicatif]
-version = "0.17.7"
-default-features = false
-
 [dependencies.lazy_static]
 version = "1.4.0"
 default-features = false
@@ -36,11 +27,6 @@ default-features = false
 [dependencies.log]
 version = "0.4.20"
 default-features = false
-
-[dependencies.ratatui]
-version = "0.23.0"
-default-features = false
-features = ["crossterm"]
 
 [dependencies.serde]
 version = "1.0.188"
