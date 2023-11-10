@@ -1,6 +1,7 @@
+use dialoguer::theme::ColorfulTheme;
+use dialoguer::Select;
+use google_youtube3::{chrono, hyper, hyper_rustls, oauth2, Result, YouTube};
 use lazy_static::lazy_static;
-use google_youtube3::{YouTube, oauth2, hyper, hyper_rustls, chrono, Result, Error};
-use log::{debug, error, info};
 
 const GOOGLE_CLIENT_INFORMATION_STR: &str = include_str!("../client_secret.json");
 lazy_static! {
@@ -8,19 +9,12 @@ lazy_static! {
         serde_json::from_str(&GOOGLE_CLIENT_INFORMATION_STR).unwrap();
 }
 
-fn setup_logging(verbosity_level: u8) {
+fn setup_logging() {
     use chrono::Utc;
 
     // create an instance for the Dispatcher to create a new logging configuration
     let mut base_config = fern::Dispatch::new();
-
-    // determine the logging level based on the verbosity the user chose
-    base_config = match verbosity_level {
-        0 => base_config.level(log::LevelFilter::Warn),
-        1 => base_config.level(log::LevelFilter::Info),
-        2 => base_config.level(log::LevelFilter::Debug),
-        _3_or_more => base_config.level(log::LevelFilter::Trace),
-    };
+    base_config = base_config.level(log::LevelFilter::Debug);
 
     // define how a logging line in the logfile should look like
     let file_config = fern::Dispatch::new()
@@ -35,59 +29,115 @@ fn setup_logging(verbosity_level: u8) {
         })
         .chain(fern::log_file("biograf.log").unwrap());
 
-    // define how a logging line on the console should look like
-    let stdout_config = fern::Dispatch::new()
-        .format(|out, message, record| {
-            out.finish(format_args!(
-                "{}[{}][{}] {}",
-                Utc::now().format("[%Y-%m-%d][%H:%M:%S]"),
-                record.target(),
-                record.level(),
-                message
-            ))
-        })
-        .chain(std::io::stdout());
-
     // now chain everything together and get ready for actually logging stuff
-    base_config
-        .chain(file_config)
-        .chain(stdout_config)
-        .apply()
-        .unwrap();
+    base_config.chain(file_config).apply().unwrap();
 }
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    setup_logging(2);
+    // setup the basic logging we need
+    setup_logging();
 
+    // get an authenticated API client for the YouTube API to deal with the playlists
     let auth = oauth2::InstalledFlowAuthenticator::builder(
         GOOGLE_CLIENT_INFORMATION.installed.clone().unwrap(),
-        oauth2::InstalledFlowReturnMethod::HTTPRedirect,
-    ).build().await.unwrap();
-    let hub = YouTube::new(hyper::Client::builder().build(hyper_rustls::HttpsConnectorBuilder::new().with_native_roots().https_or_http().enable_http1().build()), auth);
+        oauth2::InstalledFlowReturnMethod::Interactive,
+    )
+    .persist_tokens_to_disk("token.json")
+    .build()
+    .await
+    .unwrap();
+    let hub = YouTube::new(
+        hyper::Client::builder().build(
+            hyper_rustls::HttpsConnectorBuilder::new()
+                .with_native_roots()
+                .https_or_http()
+                .enable_http1()
+                .build(),
+        ),
+        auth,
+    );
 
-    let result = hub.playlists().list(&vec![]).mine(true).add_part( "snippet").doit().await;
+    // get the playlists the user has configured to ask which playlist should be processed
+    let playlists = match hub
+        .playlists()
+        .list(&vec![])
+        .mine(true)
+        .add_part("snippet")
+        .doit()
+        .await
+    {
+        Err(e) => panic!("{}", e),
+        Ok((_, res)) => res.items.unwrap(),
+    };
+    let playlist_titles = playlists
+        .iter()
+        .map(|item| {
+            item.snippet
+                .as_ref()
+                .unwrap()
+                .title
+                .as_ref()
+                .unwrap()
+                .clone()
+        })
+        .collect::<Vec<String>>();
 
-    match result {
-        Err(e) => match e {
-            Error::HttpError(_)
-            | Error::Io(_)
-            | Error::MissingAPIKey
-            | Error::MissingToken(_)
-            | Error::Cancelled
-            | Error::UploadSizeLimitExceeded(_, _)
-            | Error::Failure(_)
-            | Error::BadRequest(_)
-            | Error::FieldClash(_)
-            | Error::JsonDecodeError(_, _) => error!("{}", e),
-        },
-        Ok((_, res)) =>{
+    // ask the user which playlist should be processed
+    let selected_playlist = playlists
+        .get(
+            Select::with_theme(&ColorfulTheme::default())
+                .with_prompt("Pick the playlist you want to clean up:")
+                .default(0)
+                .items(&playlist_titles[..])
+                .interact()
+                .unwrap(),
+        )
+        .unwrap();
 
-            for current_list in res.items.unwrap() {
+    // get the items from the playlist
+    let items_in_playlist = match hub
+        .playlist_items()
+        .list(&vec![])
+        .add_part("snippet")
+        .add_part("status")
+        .playlist_id(selected_playlist.id.as_ref().unwrap().as_str())
+        .doit()
+        .await
+    {
+        Err(e) => panic!("{}", e),
+        Ok((_, res)) => res.items.unwrap(),
+    };
 
-                info!("{}", current_list.snippet.unwrap().title.unwrap());
-
-            }
+    // loop through all videos with the corresponding video id
+    for current_item in items_in_playlist {
+        if current_item
+            .status
+            .unwrap()
+            .privacy_status
+            .unwrap()
+            .eq("public")
+        {
+            println!(
+                "{} -> {:?}",
+                current_item
+                    .snippet
+                    .as_ref()
+                    .unwrap()
+                    .title
+                    .as_ref()
+                    .unwrap(),
+                current_item
+                    .snippet
+                    .as_ref()
+                    .unwrap()
+                    .resource_id
+                    .as_ref()
+                    .unwrap()
+                    .video_id
+                    .as_ref()
+                    .unwrap()
+            );
         }
     }
 
