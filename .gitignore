@@ -2,3 +2,4 @@
 /target
 *.log
 client_secret.json
+token.json
